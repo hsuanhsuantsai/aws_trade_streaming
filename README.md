@@ -10,3 +10,8 @@ Please refer to flowchart.png
    If anomaly is detected, publish a message to sns topic -- < username >_stop_trading to notify ticker to stop trading
 4. An sqs -- < username >_stop_trading will subscribe sns -- < username >_stop_trading
 5. mpcs_ticker.py pulls messages from sqs -- < username >_stop_trading to stop trades of the specific stocks for a while
+
+## Usage
+* python mpcs_ticker.py produce < delay >
+* python mpcs_ticker.py consume < delay >  
+  - Used only for testing reading from Kinesis
