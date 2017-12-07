@@ -1,0 +1,48 @@
+digraph aws_trade_streaming {
+	label=aws_trade_streaming
+	node [shape=box style=filled]
+
+	"tail" [style=invis]
+
+	subgraph cluster_A {
+		label=""
+		"mpcs_ticker.py"
+	}
+
+	subgraph cluster_B {
+		label=""
+		"kinesis"
+	}
+
+	subgraph cluster_C {
+		label=""
+		"processor.py"
+	}
+
+	subgraph cluster_D {
+		label=""
+		"dynamoDB (<username>_trade)"
+	}
+
+	subgraph cluster_E {
+		label=""
+		"sns: <username>_check_trade"
+		"trade_check.py"
+		"sns: <username>_stop_trading"
+		"sqs: <username>_stop_trading"
+	}
+
+	"sns: <username>_stop_trading" -> "sqs: <username>_stop_trading"
+	"trade_check.py" -> "sns: <username>_stop_trading" [label=anomaly]
+	"sqs: <username>_stop_trading" -> "tail" [label="go to mpcs_ticker.py if anomaly"]
+	
+	"sns: <username>_check_trade" -> "trade_check.py"
+	"processor.py" -> "sns: <username>_check_trade"
+	
+
+	"kinesis" -> "processor.py"
+	"mpcs_ticker.py" -> "kinesis"
+	
+	"processor.py" -> "dynamoDB (<username>_trade)"
+	
+}
